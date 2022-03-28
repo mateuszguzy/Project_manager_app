@@ -1,0 +1,27 @@
+{% if form_type != "add" %}
+    <!-- USERS ALREADY ON PROJECT/TASK -->
+    {% if form.occupied_users.choices == [] %}
+        <h6><strong>Currently no users in project</strong></h6>
+    {% else %}
+        <h6>Remove current users</h6>
+        {% for choice in form.occupied_users %}
+            <div class="form-check">
+                {{ choice(class="form-check-input") }}
+                {{ choice.label(class="form-check-label") }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <br>
+{% endif %}
+<!-- NEW USERS -->
+{% if form.free_users.choices == [] %}
+    <h6><strong>No available users</strong></h6>
+{% else %}
+    <h6>Available users</h6>
+    {% for choice in form.free_users %}
+        <div class="form-check">
+            {{ choice(class="form-check-input") }}
+            {{ choice.label(class="form-check-label") }}
+        </div>
+    {% endfor %}
+{% endif %}

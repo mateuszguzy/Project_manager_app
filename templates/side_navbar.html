@@ -1,0 +1,80 @@
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+            <div class="sb-sidenav-menu">
+                <div class="nav">
+<!--                MAIN MENU                                            -->
+                    <div class="sb-sidenav-menu-heading">Main</div>
+                    <a class="nav-link" href="{{ url_for('index')}}">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        Overview
+                    </a>
+                    {% if current_user.position == "manager" %}
+<!--                MANAGE MENU                                            -->
+                    <div class="sb-sidenav-menu-heading">Manage</div>
+<!--                PROJECTS SUBMENU                                            -->
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts"
+                       aria-expanded="false" aria-controls="collapseLayouts">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Projects
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+<!--                PROJECTS SUBMENU LIST                                            -->
+                    <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
+                         data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="{{ url_for('add_project')}}">Add Project</a>
+                            <a class="nav-link" href="{{ url_for('select_project_to_edit')}}">Edit Project</a>
+                            <a class="nav-link" href="{{ url_for('delete_project')}}">Delete Project</a>
+                        </nav>
+                    </div>
+<!--                TASKS SUBMENU                                            -->
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages"
+                       aria-expanded="false" aria-controls="collapsePages">
+                        <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                        Tasks
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+<!--                TASKS SUBMENU LIST                                            -->
+                    <div class="collapse" id="collapsePages" aria-labelledby="headingTwo"
+                         data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                            <a class="nav-link" href="{{ url_for('select_project_to_add_task') }}">Add Task</a>
+                            <a class="nav-link" href="{{ url_for('select_project_to_edit_task')}}">Edit Task</a>
+                            <a class="nav-link" href="{{ url_for('select_project_to_delete_tasks')}}">Delete Task</a>
+                        </nav>
+                    </div>
+<!--                USERS MENU                                            -->
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUsers"
+                       aria-expanded="false" aria-controls="collapseUsers">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Users
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+<!--                USERS SUBMENU                                            -->
+                    <div class="collapse" id="collapseUsers" aria-labelledby="headingOne"
+                         data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="{{ url_for('add_user') }}">Add User</a>
+                            <a class="nav-link" href="{{ url_for('manage_users') }}">Users List</a>
+                            <a class="nav-link" href="{{ url_for('delete_users') }}">Delete Users</a>
+                        </nav>
+                    </div>
+<!--                STATISTICS MENU                                           -->
+                    <div class="sb-sidenav-menu-heading">Addons</div>
+<!--                USERS SUBMENU                                           -->
+                    <a class="nav-link" href="#">
+                        <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                        Statistics (TO BE ADDED)
+                    </a>
+                {% endif %}
+                </div>
+            </div>
+            {% if current_user.is_authenticated %}
+            <div class="sb-sidenav-footer">
+                <div class="small">Logged in as:</div>
+                {{ current_user.name }}
+            </div>
+            {% endif %}
+        </nav>
+    </div>

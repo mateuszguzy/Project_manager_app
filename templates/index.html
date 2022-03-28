@@ -1,0 +1,107 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% include "header.html" %}
+{% include "side_navbar.html" %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+        {% if current_user.position == "manager" %}
+            {% set show = True %}
+        {% endif %}
+        {% for project in projects %}
+            <h1 class="mt-4">
+                {{ project.name }}
+                {% if show %}
+                    <a href="{{ url_for('add_task', project_id=project.id) }}">
+                        <button class="btn btn-dark">ADD TASK</button>
+                    </a>
+                {% endif %}
+            </h1>
+            <div class="row">
+                {% if project.tasks == [] %}
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-dark text-white mb-4">
+                        <div class="card-body">
+                            <div class="blockquote text-white">
+                                No Tasks Yet
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% for task in project.tasks %}
+                    {% set show_date = True %}
+                    {% if task.deadline_passed == 1 %}
+                        {% set card_color = "card bg-danger text-white mb-4" %}
+                    {% elif task.deadline_warning == 1 %}
+                        {% set card_color = "card bg-warning text-white mb-4" %}
+                    {% elif task.task_done == 1 %}
+                        {% set card_color = "card bg-success text-white mb-4" %}
+                        {% set show_date = False %}
+                    {% else %}
+                        {% set card_color = "card bg-primary text-white mb-4" %}
+                    {% endif %}
+                    <div class="col-xl-3 col-md-6">
+                        <div class="{{ card_color }}">
+                            <div class="card-body">
+                                <div class="blockquote text-white">
+                                    {{ task.title }}
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <div class="small text-white">
+                                    {{ task.description }}
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <div class="small text-white">
+                                    {% if task.involved_users == [] %}
+                                        <h6><strong>No users assigned to task !</strong></h6>
+                                    {% else %}
+                                        {% for user in task.involved_users %}
+                                            <img src={{user.email|gravatar}}/>{{ user.name }}
+                                            <br>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if show_date %}
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                {{ task.deadline }}
+                            </div>
+                            {% if task in current_user.tasks or current_user.position == "manager" %}
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <form action="" method="post" class="form" role="form">
+                                    {{ form.csrf_token() }}
+                                    {{ form.id(value=task.id) }}
+                                    {{ wtf.form_field(form.done, class_="btn btn-light") }}
+                                </form>
+                                {% if show %}
+                                     <a href="{{ url_for('edit_task', project_id=project.id, task_id=task.id) }}">
+                                         <button class="btn btn-light">EDIT</button>
+                                     </a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            {% else %}
+                                {% if show %}
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <form action="" method="post" class="form" role="form">
+                                            {{ form.csrf_token() }}
+                                            {{ form.id(value=task.id) }}
+                                            {{ wtf.form_field(form.undone, class_="btn btn-light") }}
+                                        </form>
+                                        <a href="{{ url_for('edit_task', project_id=project.id, task_id=task.id) }}">
+                                            <button class="btn btn-light">EDIT</button>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+                        </div>
+                    </div>
+                {% endfor %}
+                 <hr>
+            {% endfor %}
+        </div>
+    </main>
+    {% include "footer.html" %}

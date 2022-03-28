@@ -1,0 +1,44 @@
+{% include "header.html" %}
+{% include "side_navbar.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% if selection_goal == "project" %}
+    {% set goal = "Projects" %}
+{% elif selection_goal == "task" %}
+    {% set goal = "Tasks" %}
+{% else %}
+    {% set goal = "Users" %}
+{% endif %}
+<div id="layoutSidenav_content">
+    <body class="bg-primary">
+        <div id="layoutAuthentication">
+            <div id="layoutAuthentication_content">
+                <main>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-5">
+                                <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Choose
+                                        {{ goal }} To Delete</h3></div>
+                                    <div class="card-body">
+                                        <form class="" action="" method="post" role="form">
+                                            {{ form.hidden_tag() }}
+                                            {% for choice in form.list %}
+                                                <div class="form-check">
+                                                    {{ choice(class="form-check-input") }}
+                                                    {{ choice.label(class="form-check-label") }}
+                                                </div>
+                                            {% endfor %}
+                                            <br>
+                                            {{ wtf.form_field(form.submit, class_="btn btn-secondary") }}
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+{% include "footer.html" %}

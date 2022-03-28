@@ -1,0 +1,62 @@
+{% include "header.html" %}
+{% include "side_navbar.html" %}
+<div id="layoutSidenav_content">
+<div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Users
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Project</th>
+                            <th>Current Tasks</th>
+                            <th>Email</th>
+                            <th>Edit</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Project</th>
+                            <th>Current Tasks</th>
+                            <th>Email</th>
+                            <th>Edit</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for user in all_users %}
+                        <tr>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.position }}</td>
+                            <td>
+                                {% for project in all_projects %}
+                                    {% if project.id == user.project_id %}
+                                        {{ project.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for task in user.tasks %}
+                                    {{ task.title }},
+                                {% endfor %}
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_user', user_id=user.id) }}">
+                                    <button class="btn btn-secondary">
+                                        EDIT
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+</div>
+{% include "footer.html" %}
