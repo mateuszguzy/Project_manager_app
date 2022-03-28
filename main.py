@@ -20,7 +20,7 @@ import random
 # --- MAIN
 app = Flask(__name__)
 load_dotenv()
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_TABLE")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("POSTGRES_DATABASE_URL", "DB_TABLE")
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 Bootstrap(app)
@@ -591,4 +591,4 @@ def error_500():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
