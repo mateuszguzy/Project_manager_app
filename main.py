@@ -92,7 +92,7 @@ class Task(db.Model):
     deadline_passed = db.Column(db.Boolean)
 
 
-db.create_all()
+# db.create_all()
 
 
 # ------ REUSABLE FUNCTIONS
