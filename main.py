@@ -21,6 +21,7 @@ import random
 app = Flask(__name__)
 load_dotenv()
 POSTGRES_DATABASE_URL = os.environ.get("DATABASE_URL").replace("postgres", "postgresql")
+print(POSTGRES_DATABASE_URL)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("POSTGRES_DATABASE_URL", "DB_TABLE")
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
