@@ -259,21 +259,28 @@ def password_recovery():
     for number in temporary_password_list:
         temporary_password += str(number)
     if form.validate_on_submit():
+        print("form valid")
         user = User.query.filter_by(email=form.email.data).first()
         user.password = generate_password_hash(
             password=temporary_password,
             method="pbkdf2:sha256",
             salt_length=8
         )
+        print("adding to db")
         db.session.commit()
+        print("added to db")
         with smtplib.SMTP("smtp.gmail.com") as connection:
+            print("sending email")
             connection.starttls()
+            print("logged into email")
             connection.login(user=FROM_EMAIL, password=EMAIL_PASSWORD)
+            print("connected to email")
             connection.sendmail(
                 from_addr=FROM_EMAIL,
                 to_addrs=form.email.data,
                 msg=f"Subject: 'Project Manager App' password reset \n\n"
                     f"Your temporary password to 'Project Manger App' is {temporary_password}")
+            print("email send")
             flash("Email with temporary password has been sent.")
         return redirect("/login")
     return render_template("password_recovery.html", form=form)
@@ -551,7 +558,7 @@ def edit_user(user_id):
         user.email = form.email.data
         user.position = form.position.data
         db.session.commit()
-        return redirect("/users")
+        return redirect("/")
     return render_template("edit_user.html", form=form, user=user)
 
 
