@@ -9,11 +9,12 @@ from sqlalchemy.orm import relationship
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
-from datetime import timedelta, datetime
 from flask_gravatar import Gravatar
+from flask_mail import Mail, Message
+from datetime import timedelta, datetime
 import re
 import smtplib
-import random
+import secrets
 
 
 # ------ SET APP
@@ -33,9 +34,15 @@ db = SQLAlchemy(app)
 # --- LOGIN MANAGER
 login_manager = LoginManager()
 login_manager.init_app(app)
-# --- EMAIL CREDENTIALS
-FROM_EMAIL = os.environ.get("FROM_EMAIL")
-EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+# --- EMAIL CONFIG
+MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
+MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
+app.config["MAIL_USERNAME"] = MAIL_DEFAULT_SENDER
+app.config["MAIL_PASSWORD"] = MAIL_PASSWORD
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config['MAIL_USE_TLS'] = True
+mail = Mail(app)
+
 
 # user default avatar API
 default_avatar_mini = Gravatar(app,
@@ -253,11 +260,8 @@ def login():
 def password_recovery():
     """Password recovery function sending temporary password to user's mail, only if user is firstly registered in DB"""
     form = PasswordRecovery()
-    temporary_password = str()
-    # random password made out of numbers only
-    temporary_password_list = random.choices(range(9), k=15)
-    for number in temporary_password_list:
-        temporary_password += str(number)
+    # generate random password
+    temporary_password = secrets.token_urlsafe(16)
     if form.validate_on_submit():
         print("form valid")
         user = User.query.filter_by(email=form.email.data).first()
@@ -269,19 +273,25 @@ def password_recovery():
         print("adding to db")
         db.session.commit()
         print("added to db")
-        with smtplib.SMTP("smtp.gmail.com") as connection:
-            print("sending email")
-            connection.starttls()
-            print("logged into email")
-            connection.login(user=FROM_EMAIL, password=EMAIL_PASSWORD)
-            print("connected to email")
-            connection.sendmail(
-                from_addr=FROM_EMAIL,
-                to_addrs=form.email.data,
-                msg=f"Subject: 'Project Manager App' password reset \n\n"
-                    f"Your temporary password to 'Project Manger App' is {temporary_password}")
-            print("email send")
-            flash("Email with temporary password has been sent.")
+        print("sending email")
+        msg = Message("'Project Manager App' password reset", sender=MAIL_DEFAULT_SENDER, recipients=[form.email.data])
+        msg.body = f"Your temporary password to 'Project Manger App' is {temporary_password}"
+        print(msg)
+        mail.send(msg)
+        print("email sent")
+        # with smtplib.SMTP("smtp.gmail.com") as connection:
+        #     print("sending email")
+        #     connection.starttls()
+        #     print("logged into email")
+        #     connection.login(user=FROM_EMAIL, password=EMAIL_PASSWORD)
+        #     print("connected to email")
+        #     connection.sendmail(
+        #         from_addr=FROM_EMAIL,
+        #         to_addrs=form.email.data,
+        #         msg=f"Subject: 'Project Manager App' password reset \n\n"
+        #             f"Your temporary password to 'Project Manger App' is {temporary_password}")
+        #     print("email send")
+        #     flash("Email with temporary password has been sent.")
         return redirect("/login")
     return render_template("password_recovery.html", form=form)
 
@@ -602,4 +612,4 @@ def error_500():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
