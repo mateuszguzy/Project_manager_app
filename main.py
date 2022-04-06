@@ -13,7 +13,6 @@ from flask_gravatar import Gravatar
 from flask_mail import Mail, Message
 from datetime import timedelta, datetime
 import re
-import smtplib
 import secrets
 
 
@@ -21,8 +20,8 @@ import secrets
 # --- MAIN
 app = Flask(__name__)
 load_dotenv()
-# POSTGRES_DATABASE_URL = os.environ.get("DATABASE_URL").replace("postgres", "postgresql")
 # to work online on PostgreSQL
+# after deploying on Heroku, DB credentials change once a day, so it will only work on local DB
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("postgres", "postgresql")
 # to work locally on SQLite
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_TABLE")
@@ -38,7 +37,7 @@ login_manager.init_app(app)
 MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
 app.config["MAIL_USERNAME"] = MAIL_USERNAME
 app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD")
-app.config["MAIL_PORT"] = 789
+app.config["MAIL_PORT"] = 587
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config['MAIL_USE_TLS'] = True
 mail = Mail(app)
@@ -263,34 +262,21 @@ def password_recovery():
     # generate random password
     temporary_password = secrets.token_urlsafe(16)
     if form.validate_on_submit():
-        print("form valid")
-        user = User.query.filter_by(email=form.email.data).first()
-        user.password = generate_password_hash(
-            password=temporary_password,
-            method="pbkdf2:sha256",
-            salt_length=8
-        )
-        print("adding to db")
-        db.session.commit()
-        print("added to db")
-        print("sending email")
+        try:
+            user = User.query.filter_by(email=form.email.data).first()
+            user.password = generate_password_hash(
+                password=temporary_password,
+                method="pbkdf2:sha256",
+                salt_length=8
+            )
+            db.session.commit()
+        except AttributeError:
+            flash("Wrong email.")
+            return redirect("/login")
         msg = Message("'Project Manager App' password reset", sender=MAIL_USERNAME, recipients=[form.email.data])
         msg.body = f"Your temporary password to 'Project Manger App' is {temporary_password}"
         mail.send(msg)
-        print("email sent")
-        # with smtplib.SMTP("smtp.gmail.com") as connection:
-        #     print("sending email")
-        #     connection.starttls()
-        #     print("logged into email")
-        #     connection.login(user=FROM_EMAIL, password=EMAIL_PASSWORD)
-        #     print("connected to email")
-        #     connection.sendmail(
-        #         from_addr=FROM_EMAIL,
-        #         to_addrs=form.email.data,
-        #         msg=f"Subject: 'Project Manager App' password reset \n\n"
-        #             f"Your temporary password to 'Project Manger App' is {temporary_password}")
-        #     print("email send")
-        #     flash("Email with temporary password has been sent.")
+        flash("Email with temporary password has been sent.")
         return redirect("/login")
     return render_template("password_recovery.html", form=form)
 
