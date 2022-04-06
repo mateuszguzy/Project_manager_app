@@ -39,6 +39,7 @@ MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
 MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
 app.config["MAIL_USERNAME"] = MAIL_DEFAULT_SENDER
 app.config["MAIL_PASSWORD"] = MAIL_PASSWORD
+app.config["MAIL_PORT"] = 587
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config['MAIL_USE_TLS'] = True
 mail = Mail(app)
