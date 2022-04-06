@@ -35,12 +35,11 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 # --- EMAIL CONFIG
-MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
-MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
-app.config["MAIL_USERNAME"] = MAIL_DEFAULT_SENDER
-app.config["MAIL_PASSWORD"] = MAIL_PASSWORD
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
+MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
+app.config["MAIL_USERNAME"] = MAIL_USERNAME
+app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD")
 app.config["MAIL_PORT"] = 456
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config['MAIL_USE_TLS'] = True
 mail = Mail(app)
 
@@ -275,9 +274,10 @@ def password_recovery():
         db.session.commit()
         print("added to db")
         print("sending email")
-        msg = Message("'Project Manager App' password reset", sender=MAIL_DEFAULT_SENDER, recipients=[form.email.data])
+        msg = Message("'Project Manager App' password reset", sender=MAIL_USERNAME, recipients=[form.email.data])
         msg.body = f"Your temporary password to 'Project Manger App' is {temporary_password}"
         mail.send(msg)
+        print(msg.body)
         print("email sent")
         # with smtplib.SMTP("smtp.gmail.com") as connection:
         #     print("sending email")
