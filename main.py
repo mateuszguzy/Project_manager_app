@@ -276,7 +276,6 @@ def password_recovery():
         print("sending email")
         msg = Message("'Project Manager App' password reset", sender=MAIL_DEFAULT_SENDER, recipients=[form.email.data])
         msg.body = f"Your temporary password to 'Project Manger App' is {temporary_password}"
-        print(msg)
         mail.send(msg)
         print("email sent")
         # with smtplib.SMTP("smtp.gmail.com") as connection:
