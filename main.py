@@ -262,22 +262,25 @@ def password_recovery():
     # generate random password
     temporary_password = secrets.token_urlsafe(16)
     if form.validate_on_submit():
-        try:
-            user = User.query.filter_by(email=form.email.data).first()
-            user.password = generate_password_hash(
-                password=temporary_password,
-                method="pbkdf2:sha256",
-                salt_length=8
-            )
-            db.session.commit()
-        except AttributeError:
-            flash("Wrong email.")
-            return redirect("/login")
-        msg = Message("'Project Manager App' password reset", sender=MAIL_USERNAME, recipients=[form.email.data])
-        msg.body = f"Your temporary password to 'Project Manger App' is {temporary_password}"
-        mail.send(msg)
-        flash("Email with temporary password has been sent.")
+        flash("Password recovery is not working due to Heroku restrictions.")
         return redirect("/login")
+        # --- UNCOMMENT TO ENABLE PASSWORD RECOVERY
+        # try:
+        #     user = User.query.filter_by(email=form.email.data).first()
+        #     user.password = generate_password_hash(
+        #         password=temporary_password,
+        #         method="pbkdf2:sha256",
+        #         salt_length=8
+        #     )
+        #     db.session.commit()
+        # except AttributeError:
+        #     flash("Wrong email.")
+        #     return redirect("/login")
+        # msg = Message("'Project Manager App' password reset", sender=MAIL_USERNAME, recipients=[form.email.data])
+        # msg.body = f"Your temporary password to 'Project Manger App' is {temporary_password}"
+        # mail.send(msg)
+        # flash("Email with temporary password has been sent.")
+        # return redirect("/login")
     return render_template("password_recovery.html", form=form)
 
 
