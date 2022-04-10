@@ -1,3 +1,7 @@
+Hosted App:
+<br>
+https://project-manager-app-mg.herokuapp.com
+<br><br>
 USER MANUAL
 
 1. Manager account is already created, default credentials are:
